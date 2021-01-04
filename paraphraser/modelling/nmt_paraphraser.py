@@ -1,27 +1,56 @@
 import os
+import time
 
 import torch
-from fairseq import bleu, checkpoint_utils, progress_bar, tasks
-from fairseq.meters import StopwatchMeter, TimeMeter
+from fairseq import checkpoint_utils, progress_bar, tasks
 from fairseq import utils
 from fairseq.sequence_generator import EnsembleModel
 import sentencepiece as spm
-import time
 
-from paraphraser.utils import run_bash_cmd, Bunch
+from paraphraser.utils import run_bash_cmd, Bunch, merge_dicts
 from paraphraser.modelling.utils import forward_decoder, get_final_string
 from paraphraser.modelling.ngram_downweight_model_starting import NgramDownweightModel
 
+model_dir = "m39v1/"
+default_args = {'no_progress_bar': True, 'log_interval': 1000, 'log_format': None, 'tensorboard_logdir': '', 'seed': 1,
+        'fp16_init_scale': 128, 'fp16_scale_window': None,
+        'fp16_scale_tolerance': 0.0, 'min_loss_scale': 0.0001, 'threshold_loss_scale': None, 'user_dir': None,
+        'empty_cache_freq': 0, 'criterion': 'cross_entropy', 'tokenizer': None, 'bpe': None, 'optimizer': 'nag',
+        'lr_scheduler': 'fixed', 'task': 'translation', 'num_workers': 1, 'skip_invalid_size_inputs_valid_test': False,
+        'max_tokens': None, 'max_sentences': 8, 'required_batch_size_multiple': 8, 'dataset_impl': None,
+        'gen_subset': 'test', 'num_shards': 1, 'shard_id': 0, 'path': model_dir, 'remove_bpe': None, 'quiet': False,
+        'model_overrides': '{}', 'results_path': None, 'max_len_a': 0,
+        'max_len_b': 40, 'min_len': 1, 'match_source_len': False, 'no_early_stop': False, 'unnormalized': False,
+        'no_beamable_mm': False, 'lenpen': 1, 'unkpen': 0, 'replace_unk': None, 'sacrebleu': False,
+        'score_reference': False, 'prefix_size': 1, 'no_repeat_ngram_size': 0, 'sampling': False,
+        'sampling_topk': -1, 'sampling_topp': -1.0, 'print_alignment': False,
+        'print_step': False, 'iter_decode_eos_penalty': 0.0, 'iter_decode_max_iter': 10,
+        'iter_decode_force_max_iter': False, 'retain_iter_history': False,
+        'decoding_format': None, 'momentum': 0.99, 'weight_decay': 0.0,
+        'force_anneal': None, 'lr_shrink': 0.1, 'warmup_updates': 0, 'data': 'test_bin', 'source_lang': None,
+        'target_lang': None, 'lazy_load': False, 'raw_text': False, 'load_alignments': False,
+        'left_pad_source': False, 'left_pad_target': 'False', 'upsample_primary': 1, 'truncate_source': False,
+        "model_dir": os.path.join(model_dir,'checkpoint.pt')}
 
 class NMTParaphraser:
 
-    def __init__(self, args, lite_mode=True):
+    def __init__(self, run_args, lite_mode=True):
 
         if lite_mode:
             EnsembleModel.forward_decoder = forward_decoder
-        self.args = Bunch(args)
+
+        run_args = merge_dicts(default_args, run_args)
+        self._fill_hardware_args(run_args)
+        self.args = Bunch(run_args)
         self._load_tokenizer()
         self._load_model(lite_mode)
+
+    @staticmethod
+    def _fill_hardware_args(args):
+        gpu = torch.cuda.is_available()
+        args["cpu"] = not gpu
+        args["fp16"] = True if gpu else False
+        args["memory_efficient_fp16"] = False
 
     def _load_model(self, lite_mode):
 
@@ -159,7 +188,7 @@ class NMTParaphraser:
     def generate_paraphrase(self, paragraph, lang, prism_a=0.01, prism_b=4):
 
         self.reset_prism_value(prism_a, prism_b)
-        start = time.time()
+
         self.tokenize([paragraph], lang)
         self.preprocess_nmt()
         paraphrases = self.pass_decoder()
@@ -167,8 +196,7 @@ class NMTParaphraser:
         # remove the id here
         paraphrases = [p[1].replace(f"<{lang}>", "").strip() for p in paraphrases]
         paraphrases = [p.replace(f"<unk>", "").strip() for p in paraphrases]
-        end = time.time()
-        print("Complete inference time", end - start)
+
         return paraphrases
 
     def reset_prism_value(self, prism_a, prism_b):
