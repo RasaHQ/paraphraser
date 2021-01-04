@@ -56,7 +56,7 @@ args['model_dir'] = model_dir
 
 # Toggle lite_mode to True to run a light version of the model. 
 # Considerable speedup on CPU with some impact on the diversity in paraphrases generated.
-pp = NMTParaphraser(args, lite_mode=False)
+pp = NMTParaphraser(args, lite_mode=True)
 
 
 # In[4]:
