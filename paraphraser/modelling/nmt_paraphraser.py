@@ -18,7 +18,8 @@ default_args = {'no_progress_bar': True, 'log_interval': 1000, 'log_format': Non
         'empty_cache_freq': 0, 'criterion': 'cross_entropy', 'tokenizer': None, 'bpe': None, 'optimizer': 'nag',
         'lr_scheduler': 'fixed', 'task': 'translation', 'num_workers': 1, 'skip_invalid_size_inputs_valid_test': False,
         'max_tokens': None, 'max_sentences': 8, 'required_batch_size_multiple': 8, 'dataset_impl': None,
-        'gen_subset': 'test', 'num_shards': 1, 'shard_id': 0, 'path': model_dir, 'remove_bpe': None, 'quiet': False,
+        'gen_subset': 'test', 'num_shards': 1, 'shard_id': 0, 'path': os.path.join(model_dir,'checkpoint.pt'),
+        'remove_bpe': None, 'quiet': False,
         'model_overrides': '{}', 'results_path': None, 'max_len_a': 0,
         'max_len_b': 40, 'min_len': 1, 'match_source_len': False, 'no_early_stop': False, 'unnormalized': False,
         'no_beamable_mm': False, 'lenpen': 1, 'unkpen': 0, 'replace_unk': None, 'sacrebleu': False,
@@ -30,7 +31,7 @@ default_args = {'no_progress_bar': True, 'log_interval': 1000, 'log_format': Non
         'force_anneal': None, 'lr_shrink': 0.1, 'warmup_updates': 0, 'data': 'test_bin', 'source_lang': None,
         'target_lang': None, 'lazy_load': False, 'raw_text': False, 'load_alignments': False,
         'left_pad_source': False, 'left_pad_target': 'False', 'upsample_primary': 1, 'truncate_source': False,
-        "model_dir": os.path.join(model_dir,'checkpoint.pt')}
+        "model_dir": model_dir}
 
 class NMTParaphraser:
 
@@ -39,7 +40,7 @@ class NMTParaphraser:
         if lite_mode:
             EnsembleModel.forward_decoder = forward_decoder
 
-        run_args = merge_dicts(default_args, run_args)
+        run_args = merge_dicts(default_args, vars(run_args))
         self._fill_hardware_args(run_args)
         self.args = Bunch(run_args)
         self._load_tokenizer()
