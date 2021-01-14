@@ -7,8 +7,12 @@ from collections import OrderedDict
 
 
 def read_from_csv(file_path: Text) -> List[Text]:
+    
+    collection = []
     with open(file_path, newline="") as csvfile:
-        collection = csv.reader(csvfile, delimiter=" ", quotechar="|")
+        reader = csv.reader(csvfile, delimiter=",", quotechar="|")
+        for line in reader:
+            collection.append(line)
     return collection
 
 
@@ -20,13 +24,18 @@ def read_collection_from_csv(file_path: Text) -> List[Message]:
         if len(line) == 2:
             sentence, label = line[0], line[1]
             all_sentences.append(Message.build(text=sentence, intent=label))
+        elif len(line) == 1:
+            sentence = line[0]
+            all_sentences.append(Message.build(text=sentence))
+        else:
+            raise RuntimeError("Input CSV file does not adhere to the correct format")
     return all_sentences
 
 
 def read_collection(data_directory: Text, file_path: Text) -> Message:
 
     input_file_path = Path(data_directory) / file_path
-    if input_file_path.endswith("csv"):
+    if str(input_file_path).endswith("csv"):
         return read_collection_from_csv(input_file_path)
     else:
         pass
@@ -52,7 +61,7 @@ def dump_to_csv(csv_lines: List[List[Text]], file_path: Text):
 
     with open(file_path, "w", newline="") as csvfile:
         csvwriter = csv.writer(
-            csvfile, delimiter=" ", quotechar="|", quoting=csv.QUOTE_MINIMAL
+            csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
         )
 
         for line in csv_lines:
@@ -73,11 +82,11 @@ def serialize_collection_as_csv(collection: List[Message]) -> List[List[Text]]:
     return csv_lines
 
 
-def write_collection(collection: List[Message], output_directory: text, format: Text):
+def write_collection(collection: List[Message], output_directory: Text, format: Text):
 
     output_file_path = Path(output_directory) / f"augmented_data.{format}"
 
-    if output_file_path.endswith("csv"):
+    if str(output_file_path).endswith("csv"):
         csv_content = serialize_collection_as_csv(collection)
         dump_to_csv(csv_content, output_file_path)
     else:

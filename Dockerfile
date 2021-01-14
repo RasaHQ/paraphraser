@@ -16,11 +16,13 @@ WORKDIR /home
 COPY download_model.sh download_model.sh
 RUN ./download_model.sh
 
-COPY . .
-
 RUN conda install pytorch==1.4.0 torchvision==0.5.0 cpuonly -c pytorch
+
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 RUN tar -xvf m39v1.tar
+
+COPY . .
 
 RUN touch run_paraphraser.py

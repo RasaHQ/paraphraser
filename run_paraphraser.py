@@ -42,7 +42,7 @@ def run_bulk(model, args):
         )
         message.set("metadata", {"paraphrases": paraphrases})
 
-    write_collection(collection, DATA_PATH, args.format)
+    write_collection(collection, DATA_PATH, args.output_format)
 
 
 def run(args):
