@@ -1,10 +1,8 @@
-import time
 import torch
 from fairseq.models import FairseqEncoder, FairseqDecoder, FairseqEncoderDecoderModel
 from fairseq import utils
 from paraphraser.modelling.utils import (
     make_vocab_start_map,
-    make_word_penalties,
     make_word_penalties_tokens,
 )
 
@@ -35,7 +33,6 @@ class NgramDownweightEncoder(FairseqEncoder):
 
         # Return the Encoder's output. This can be any object and will be
         # passed directly to the Decoder.
-        # print("Src tokens inside encoder", src_tokens)
         debug_out = self.dictionary.string(
             src_tokens, bpe_symbol=None, escape_unk=False
         )
@@ -98,15 +95,6 @@ class NgramDownweightDecoder(FairseqDecoder):
 
         xx = torch.zeros([batch_size, tgt_len, vocab_size], dtype=torch.float32)
 
-        # debug_out = self.dictionary.string(prev_output_tokens,
-        #                                    bpe_symbol=None, escape_unk=False)
-
-        # lines = debug_out.split('\n')
-
-        # print("Encoder out", len(encoder_out))
-
-        # print(prev_output_tokens)
-
         penalties = encoder_out[0]
 
         prefix = ()
@@ -117,8 +105,6 @@ class NgramDownweightDecoder(FairseqDecoder):
 
         # Return the logits and ``None`` for the attention weights
         xx = xx.cuda() if not self.args.cpu else xx
-        end = time.time()
-        # print('decoder forward', end - start)
         return xx, None
 
 

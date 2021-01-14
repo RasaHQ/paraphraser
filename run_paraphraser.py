@@ -1,9 +1,7 @@
 import argparse
-import os
 import time
 import tqdm
 import logging
-from pathlib import Path
 
 from paraphraser.modelling.nmt_paraphraser import NMTParaphraser
 from paraphraser.io import read_collection, write_collection

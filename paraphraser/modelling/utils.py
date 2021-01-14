@@ -89,8 +89,6 @@ def make_word_penalties(line, vocab, mapx):
         if x
     ]
 
-    print(line2)
-
     for prefix_len in (0, 1, 2, 3):
         for ii in range(len(line2) - prefix_len):
             prefix = line2[ii : ii + prefix_len]
@@ -121,7 +119,6 @@ def make_word_penalties(line, vocab, mapx):
             ]:  # every word that starts the same, sans case
                 penalties[tuple(word_prefix)].append((tok, len(prefix)))
 
-    # print("Penalties", penalties)
     return penalties
 
 
@@ -136,62 +133,6 @@ def _add_to_penalty(penalties, word_prefix, tok, prefix):
     penalties[tuple(word_prefix)][len(prefix)].append(tok)
 
     return penalties
-
-
-# def make_word_penalties(line, vocab, mapx):
-#     """
-#     prefix: subwords that make up a n-gram (n=1,2,3,4) of FULL WORDS
-#     penalize: the next subword
-#     """
-#     from time import time
-#     t0 = time()
-#
-#     penalties = {}
-#     uline = '▁'
-#
-#     def breakup(tt):
-#         out = []
-#         for word in tt:
-#             for ii, subword in enumerate(word):
-#                 if ii == 0:
-#                     out.append(uline + subword)
-#                 else:
-#                     out.append(subword)
-#         return out
-#
-#     line2 = line.replace('<pad>', '').strip()
-#     line2 = [x.replace('|', ' ').strip().split() for x in line2.replace(' ', '|').split(uline) if x]
-#
-#     print(line2)
-#
-#     for prefix_len in (0, 1, 2, 3):
-#         for ii in range(len(line2) - prefix_len):
-#             prefix = line2[ii:ii + prefix_len]
-#             next_word = uline + line2[ii + prefix_len][0]  # just penalize starting a word, not continuing it
-#
-#             whole_next_word = uline + ''.join(line2[ii + prefix_len])
-#
-#             word_prefix = breakup(prefix)
-#
-#             # penalize any token that starts the next word, ignoring case
-#             # about 1s per line
-#             for tok in vocab:
-#                 if whole_next_word.lower().startswith(tok.lower()):
-#                     penalties = _add_to_penalty(penalties, word_prefix, tok, prefix)
-#
-#             # build the longest part of the next word I can that is in the vocab
-#             longest_next_substring = uline
-#             for subthing in line2[ii + prefix_len]:
-#                 if longest_next_substring + subthing in vocab:
-#                     longest_next_substring = longest_next_substring + subthing
-#                 else:
-#                     break
-#
-#             for tok in mapx[longest_next_substring]:  # every word that starts the same, sans case
-#                 penalties = _add_to_penalty(penalties, word_prefix, tok, prefix)
-#
-#     print("Penalties", penalties)
-#     return penalties
 
 
 def _add_to_penalty_token_ids(penalties, word_prefix, tok, prefix, dictionary):
@@ -235,8 +176,6 @@ def make_word_penalties_tokens(line, vocab, mapx, dictionary):
         for x in line2.replace(" ", "|").split(uline)
         if x
     ]
-    #
-    # print(line2)
 
     for prefix_len in (0, 1, 2, 3):
         for ii in range(-1, len(line2) - prefix_len):
@@ -272,7 +211,6 @@ def make_word_penalties_tokens(line, vocab, mapx, dictionary):
                     penalties, word_prefix, tok, prefix, dictionary
                 )
 
-    # print("Penalties", penalties)
     return penalties
 
 

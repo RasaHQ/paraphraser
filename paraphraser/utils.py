@@ -1,8 +1,11 @@
 import subprocess
+import logging
+
+logger = logging.getLogger("paraphraser.utils")
 
 
 def run_bash_cmd(cmd):
-    print("Running command", cmd)
+    logger.debug(f"Running command {cmd}")
     process = subprocess.Popen(
         cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )

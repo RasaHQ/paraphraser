@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 
 def read_from_csv(file_path: Text) -> List[Text]:
-    
+
     collection = []
     with open(file_path, newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quotechar="|")
