@@ -6,7 +6,6 @@ from paraphraser.modelling.utils import make_vocab_start_map, make_word_penaltie
 
 
 class NgramDownweightEncoder(FairseqEncoder):
-
     def __init__(self, args, dictionary):
         super().__init__(dictionary)
         self.mapx = make_vocab_start_map(self.dictionary.symbols)
@@ -26,20 +25,24 @@ class NgramDownweightEncoder(FairseqEncoder):
         if self.args.left_pad_source:
             # Convert left-padding to right-padding.
             src_tokens = utils.convert_padding_direction(
-                src_tokens,
-                padding_idx=self.dictionary.pad(),
-                left_to_right=True
+                src_tokens, padding_idx=self.dictionary.pad(), left_to_right=True
             )
 
         # Return the Encoder's output. This can be any object and will be
         # passed directly to the Decoder.
         print("Src tokens inside encoder", src_tokens)
-        debug_out = self.dictionary.string(src_tokens,
-                                           bpe_symbol=None, escape_unk=False)
+        debug_out = self.dictionary.string(
+            src_tokens, bpe_symbol=None, escape_unk=False
+        )
 
         batch_penalties = []
-        for line in debug_out.split('\n'):
-            penalties = make_word_penalties_tokens(line=line, vocab=self.vocab_set, mapx=self.mapx, dictionary=self.dictionary)
+        for line in debug_out.split("\n"):
+            penalties = make_word_penalties_tokens(
+                line=line,
+                vocab=self.vocab_set,
+                mapx=self.mapx,
+                dictionary=self.dictionary,
+            )
             batch_penalties.append(penalties)
 
         return batch_penalties
@@ -61,7 +64,6 @@ class NgramDownweightEncoder(FairseqEncoder):
 
 
 class NgramDownweightDecoder(FairseqDecoder):
-
     def __init__(self, args, dictionary):
         super().__init__(dictionary)
         self.args = args
@@ -111,7 +113,7 @@ class NgramDownweightDecoder(FairseqDecoder):
             # toks = line.strip().split()
             # if ii == 0: print('input length:', len(toks))
 
-            for n_gram_n in range(1, min(len(toks)+2, max_prefix_len)):
+            for n_gram_n in range(1, min(len(toks) + 2, max_prefix_len)):
                 prefix_size = n_gram_n - 1
 
                 if prefix_size == 0:
@@ -132,7 +134,9 @@ class NgramDownweightDecoder(FairseqDecoder):
                         # for next_word in penalties[prefix][prefix_len_in_words]:
                         #
                         #     # word_idx = self.dictionary.index(next_word)
-                        xx[ii, -1, penalties[prefix][prefix_len_in_words]] -= a * (p ** b)
+                        xx[ii, -1, penalties[prefix][prefix_len_in_words]] -= a * (
+                            p ** b
+                        )
 
         # Return the logits and ``None`` for the attention weights
         xx = xx.cuda() if not self.args.cpu else xx
@@ -142,7 +146,6 @@ class NgramDownweightDecoder(FairseqDecoder):
 
 
 class NgramDownweightModel(FairseqEncoderDecoderModel):
-
     def max_positions(self):
         return (123456, 123456)
 

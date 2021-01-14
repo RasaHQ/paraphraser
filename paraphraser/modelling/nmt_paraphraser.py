@@ -12,29 +12,83 @@ from paraphraser.modelling.utils import forward_decoder, get_final_string
 from paraphraser.modelling.ngram_downweight_model_starting import NgramDownweightModel
 
 model_dir = "m39v1/"
-default_args = {'no_progress_bar': True, 'log_interval': 1000, 'log_format': None, 'tensorboard_logdir': '', 'seed': 1,
-        'fp16_init_scale': 128, 'fp16_scale_window': None,
-        'fp16_scale_tolerance': 0.0, 'min_loss_scale': 0.0001, 'threshold_loss_scale': None, 'user_dir': None,
-        'empty_cache_freq': 0, 'criterion': 'cross_entropy', 'tokenizer': None, 'bpe': None, 'optimizer': 'nag',
-        'lr_scheduler': 'fixed', 'task': 'translation', 'num_workers': 1, 'skip_invalid_size_inputs_valid_test': False,
-        'max_tokens': None, 'max_sentences': 8, 'required_batch_size_multiple': 8, 'dataset_impl': None,
-        'gen_subset': 'test', 'num_shards': 1, 'shard_id': 0, 'path': os.path.join(model_dir,'checkpoint.pt'),
-        'remove_bpe': None, 'quiet': False,
-        'model_overrides': '{}', 'results_path': None, 'max_len_a': 0,
-        'max_len_b': 40, 'min_len': 1, 'match_source_len': False, 'no_early_stop': False, 'unnormalized': False,
-        'no_beamable_mm': False, 'lenpen': 1, 'unkpen': 0, 'replace_unk': None, 'sacrebleu': False,
-        'score_reference': False, 'prefix_size': 1, 'no_repeat_ngram_size': 0, 'sampling': False,
-        'sampling_topk': -1, 'sampling_topp': -1.0, 'print_alignment': False,
-        'print_step': False, 'iter_decode_eos_penalty': 0.0, 'iter_decode_max_iter': 10,
-        'iter_decode_force_max_iter': False, 'retain_iter_history': False,
-        'decoding_format': None, 'momentum': 0.99, 'weight_decay': 0.0,
-        'force_anneal': None, 'lr_shrink': 0.1, 'warmup_updates': 0, 'data': 'test_bin', 'source_lang': None,
-        'target_lang': None, 'lazy_load': False, 'raw_text': False, 'load_alignments': False,
-        'left_pad_source': False, 'left_pad_target': 'False', 'upsample_primary': 1, 'truncate_source': False,
-        "model_dir": model_dir}
+default_args = {
+    "no_progress_bar": True,
+    "log_interval": 1000,
+    "log_format": None,
+    "tensorboard_logdir": "",
+    "seed": 1,
+    "fp16_init_scale": 128,
+    "fp16_scale_window": None,
+    "fp16_scale_tolerance": 0.0,
+    "min_loss_scale": 0.0001,
+    "threshold_loss_scale": None,
+    "user_dir": None,
+    "empty_cache_freq": 0,
+    "criterion": "cross_entropy",
+    "tokenizer": None,
+    "bpe": None,
+    "optimizer": "nag",
+    "lr_scheduler": "fixed",
+    "task": "translation",
+    "num_workers": 1,
+    "skip_invalid_size_inputs_valid_test": False,
+    "max_tokens": None,
+    "max_sentences": 8,
+    "required_batch_size_multiple": 8,
+    "dataset_impl": None,
+    "gen_subset": "test",
+    "num_shards": 1,
+    "shard_id": 0,
+    "path": os.path.join(model_dir, "checkpoint.pt"),
+    "remove_bpe": None,
+    "quiet": False,
+    "model_overrides": "{}",
+    "results_path": None,
+    "max_len_a": 0,
+    "max_len_b": 40,
+    "min_len": 1,
+    "match_source_len": False,
+    "no_early_stop": False,
+    "unnormalized": False,
+    "no_beamable_mm": False,
+    "lenpen": 1,
+    "unkpen": 0,
+    "replace_unk": None,
+    "sacrebleu": False,
+    "score_reference": False,
+    "prefix_size": 1,
+    "no_repeat_ngram_size": 0,
+    "sampling": False,
+    "sampling_topk": -1,
+    "sampling_topp": -1.0,
+    "print_alignment": False,
+    "print_step": False,
+    "iter_decode_eos_penalty": 0.0,
+    "iter_decode_max_iter": 10,
+    "iter_decode_force_max_iter": False,
+    "retain_iter_history": False,
+    "decoding_format": None,
+    "momentum": 0.99,
+    "weight_decay": 0.0,
+    "force_anneal": None,
+    "lr_shrink": 0.1,
+    "warmup_updates": 0,
+    "data": "test_bin",
+    "source_lang": None,
+    "target_lang": None,
+    "lazy_load": False,
+    "raw_text": False,
+    "load_alignments": False,
+    "left_pad_source": False,
+    "left_pad_target": "False",
+    "upsample_primary": 1,
+    "truncate_source": False,
+    "model_dir": model_dir,
+}
+
 
 class NMTParaphraser:
-
     def __init__(self, run_args, lite_mode=True):
 
         if lite_mode:
@@ -68,15 +122,15 @@ class NMTParaphraser:
 
         # Set dictionaries
         try:
-            self.src_dict = getattr(self.task, 'source_dictionary', None)
+            self.src_dict = getattr(self.task, "source_dictionary", None)
         except NotImplementedError:
             self.src_dict = None
         self.tgt_dict = self.task.target_dictionary
 
         # Load ensemble
-        print('| loading model(s) from {}'.format(self.args.path))
+        print("| loading model(s) from {}".format(self.args.path))
         self.models, _model_args = checkpoint_utils.load_model_ensemble(
-            self.args.path.split(':'),
+            self.args.path.split(":"),
             arg_overrides=eval(self.args.model_overrides),
             task=self.task,
         )
@@ -85,7 +139,9 @@ class NMTParaphraser:
         for model in self.models:
 
             model.make_generation_fast_(
-                beamable_mm_beam_size=None if self.args.no_beamable_mm else self.args.beam,
+                beamable_mm_beam_size=None
+                if self.args.no_beamable_mm
+                else self.args.beam,
                 need_attn=self.args.print_alignment,
             )
             if self.args.fp16:
@@ -94,8 +150,12 @@ class NMTParaphraser:
                 model.cuda()
 
         if not lite_mode:
-            self.ngram_downweight_model = NgramDownweightModel.build_model(self.args, self.task)
-            self.models.append(self.ngram_downweight_model)  # ensemble Prism multilingual NMT model and model to downweight n-grams
+            self.ngram_downweight_model = NgramDownweightModel.build_model(
+                self.args, self.task
+            )
+            self.models.append(
+                self.ngram_downweight_model
+            )  # ensemble Prism multilingual NMT model and model to downweight n-grams
 
         # Load alignment dictionary for unknown word replacement
         # (None if no unknown word replacement, empty if no path to align dictionary)
@@ -112,26 +172,27 @@ class NMTParaphraser:
     def _load_tokenizer(self):
 
         self.sp = spm.SentencePieceProcessor()
-        self.sp.Load(os.path.join(self.args.model_dir, 'spm.model'))
+        self.sp.Load(os.path.join(self.args.model_dir, "spm.model"))
 
     def tokenize(self, sentences, lang):
 
-        sp_sents = [' '.join(self.sp.EncodeAsPieces(sent)) for sent in sentences]
-        with open('test.src', 'wt') as fout:
+        sp_sents = [" ".join(self.sp.EncodeAsPieces(sent)) for sent in sentences]
+        with open("test.src", "wt") as fout:
             for sent in sp_sents:
-                fout.write(sent + '\n')
+                fout.write(sent + "\n")
 
         # we also need a dummy output file with the language tag
-        with open('test.tgt', 'wt') as fout:
+        with open("test.tgt", "wt") as fout:
             for sent in sp_sents:
-                fout.write(f'<{lang}> \n')
+                fout.write(f"<{lang}> \n")
 
     def preprocess_nmt(self):
 
         run_bash_cmd("rm -rf data-bin")
         run_bash_cmd("rm -rf test_bin")
         run_bash_cmd(
-            f"fairseq-preprocess --source-lang src --target-lang tgt --joined-dictionary --srcdict {self.args.model_dir}/dict.tgt.txt --trainpref test --validpref test --testpref test --destdir test_bin")
+            f"fairseq-preprocess --source-lang src --target-lang tgt --joined-dictionary --srcdict {self.args.model_dir}/dict.tgt.txt --trainpref test --validpref test --testpref test --destdir test_bin"
+        )
 
     def pass_decoder(self):
 
@@ -141,7 +202,8 @@ class NMTParaphraser:
             max_tokens=self.args.max_tokens,
             max_sentences=self.args.max_sentences,
             max_positions=utils.resolve_max_positions(
-                self.task.max_positions(), *self.fixed_max_positions),
+                self.task.max_positions(), *self.fixed_max_positions
+            ),
             ignore_invalid_inputs=self.args.skip_invalid_size_inputs_valid_test,
             required_batch_size_multiple=self.args.required_batch_size_multiple,
             num_shards=self.args.num_shards,
@@ -156,27 +218,35 @@ class NMTParaphraser:
         with progress_bar.build_progress_bar(self.args, itr) as t:
             for sample in t:
                 sample = utils.move_to_cuda(sample) if self.use_cuda else sample
-                if 'net_input' not in sample:
+                if "net_input" not in sample:
                     continue
 
                 prefix_tokens = None
                 if self.args.prefix_size > 0:
-                    prefix_tokens = sample['target'][:, :self.args.prefix_size]
+                    prefix_tokens = sample["target"][:, : self.args.prefix_size]
 
-                hypos = self.task.inference_step(generator, self.models, sample, prefix_tokens)
+                hypos = self.task.inference_step(
+                    generator, self.models, sample, prefix_tokens
+                )
 
-                for i, sample_id in enumerate(sample['id'].tolist()):
+                for i, sample_id in enumerate(sample["id"].tolist()):
 
                     # Remove padding
-                    src_tokens = utils.strip_pad(sample['net_input']['src_tokens'][i, :], self.tgt_dict.pad())
+                    src_tokens = utils.strip_pad(
+                        sample["net_input"]["src_tokens"][i, :], self.tgt_dict.pad()
+                    )
                     src_str = self.src_dict.string(src_tokens, self.args.remove_bpe)
 
                     # Process top predictions
-                    for j, hypo in enumerate(hypos[i][:self.args.nbest]):
-                        hypo_tokens, hypo_str, alignment = utils.post_process_prediction(
-                            hypo_tokens=hypo['tokens'].int().cpu(),
+                    for j, hypo in enumerate(hypos[i][: self.args.nbest]):
+                        (
+                            hypo_tokens,
+                            hypo_str,
+                            alignment,
+                        ) = utils.post_process_prediction(
+                            hypo_tokens=hypo["tokens"].int().cpu(),
                             src_str=src_str,
-                            alignment=hypo['alignment'],
+                            alignment=hypo["alignment"],
                             align_dict=self.align_dict,
                             tgt_dict=self.tgt_dict,
                             remove_bpe=self.args.remove_bpe,

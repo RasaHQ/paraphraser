@@ -2,11 +2,14 @@ import time
 import torch
 from fairseq.models import FairseqEncoder, FairseqDecoder, FairseqEncoderDecoderModel
 from fairseq import utils
-from paraphraser.modelling.utils import make_vocab_start_map, make_word_penalties, make_word_penalties_tokens
+from paraphraser.modelling.utils import (
+    make_vocab_start_map,
+    make_word_penalties,
+    make_word_penalties_tokens,
+)
 
 
 class NgramDownweightEncoder(FairseqEncoder):
-
     def __init__(self, args, dictionary):
         super().__init__(dictionary)
         self.mapx = make_vocab_start_map(self.dictionary.symbols)
@@ -27,20 +30,24 @@ class NgramDownweightEncoder(FairseqEncoder):
         if self.args.left_pad_source:
             # Convert left-padding to right-padding.
             src_tokens = utils.convert_padding_direction(
-                src_tokens,
-                padding_idx=self.dictionary.pad(),
-                left_to_right=True
+                src_tokens, padding_idx=self.dictionary.pad(), left_to_right=True
             )
 
         # Return the Encoder's output. This can be any object and will be
         # passed directly to the Decoder.
         # print("Src tokens inside encoder", src_tokens)
-        debug_out = self.dictionary.string(src_tokens,
-                                           bpe_symbol=None, escape_unk=False)
+        debug_out = self.dictionary.string(
+            src_tokens, bpe_symbol=None, escape_unk=False
+        )
 
         batch_penalties = []
-        for line in debug_out.split('\n'):
-            penalties = make_word_penalties_tokens(line=line, vocab=self.vocab_set, mapx=self.mapx, dictionary=self.dictionary)
+        for line in debug_out.split("\n"):
+            penalties = make_word_penalties_tokens(
+                line=line,
+                vocab=self.vocab_set,
+                mapx=self.mapx,
+                dictionary=self.dictionary,
+            )
             batch_penalties.append(penalties)
 
         return batch_penalties
@@ -62,7 +69,6 @@ class NgramDownweightEncoder(FairseqEncoder):
 
 
 class NgramDownweightDecoder(FairseqDecoder):
-
     def __init__(self, args, dictionary):
         super().__init__(dictionary)
         self.args = args
@@ -117,7 +123,6 @@ class NgramDownweightDecoder(FairseqDecoder):
 
 
 class NgramDownweightModel(FairseqEncoderDecoderModel):
-
     def max_positions(self):
         return (123456, 123456)
 

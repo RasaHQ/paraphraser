@@ -1,20 +1,29 @@
 import argparse
 import os
 import time
+import tqdm
 import logging
-logger = logging.getLogger()
+from pathlib import Path
 
 from paraphraser.modelling.nmt_paraphraser import NMTParaphraser
+from paraphraser.io import read_collection, write_collection
+
+logger = logging.getLogger()
+DATA_PATH = "/etc/data"
 
 
 def run_interactive(model, args):
 
-    logger.info(f"Starting paraphraser in interactive mode. Language set to {args.language}")
+    logger.info(
+        f"Starting paraphraser in interactive mode. Language set to {args.language}"
+    )
 
     while True:
         input_sentence = input("Enter a sentence to be paraphrased: ")
         start = time.time()
-        paraphrases = model.generate_paraphrase(input_sentence, args.language, args.prism_a, args.prism_b)
+        paraphrases = model.generate_paraphrase(
+            input_sentence, args.language, args.prism_a, args.prism_b
+        )
         end = time.time()
 
         for i, p in enumerate(paraphrases):
@@ -24,7 +33,16 @@ def run_interactive(model, args):
 
 
 def run_bulk(model, args):
-    pass
+
+    collection = read_collection(DATA_PATH, args.input_file)
+    for message in collection:
+        input_sentence = message.get("text")
+        paraphrases = model.generate_paraphrase(
+            input_sentence, args.language, args.prism_a, args.prism_b
+        )
+        message.set("metadata", {"paraphrases": paraphrases})
+
+    write_collection(collection, DATA_PATH, args.format)
 
 
 def run(args):
@@ -42,24 +60,45 @@ def run(args):
 def validate_args(args):
 
     if not args.interactive and not args.input_file:
-        raise ValueError("You chose to run the paraphraser in bulk mode but did not specify a "
-                         "file to pick up the input sentences from. Either run in interactive "
-                         "mode(--interactive) or pass the path to a file to be paraphrased with "
-                         "--input_file option")
+        raise ValueError(
+            "You chose to run the paraphraser in bulk mode but did not specify a "
+            "file to pick up the input sentences from. Either run in interactive "
+            "mode(--interactive) or pass the path to a file to be paraphrased with "
+            "--input_file option"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--lite", action='store_true', help="Run paraphraser in lite mode, i.e. do not apply "
-                                                          "downweight penalty during decoding. "
-                                                          "This results in speedup at the cost of "
-                                                          "diversity of generated paraphrases.")
-    parser.add_argument("--interactive", action="store_true", help="Run paraphraser interactively in the shell.")
+    parser.add_argument(
+        "--lite",
+        action="store_true",
+        help="Run paraphraser in lite mode, i.e. do not apply "
+        "downweight penalty during decoding. "
+        "This results in speedup at the cost of "
+        "diversity of generated paraphrases.",
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Run paraphraser interactively in the shell.",
+    )
 
-    parser.add_argument("--language", required=True, help="Language code corresponding to the language of input sentence.")
-    parser.add_argument("--input_file", default="", help="File containing input sentences to be paraphrased")
+    parser.add_argument(
+        "--language",
+        required=True,
+        help="Language code corresponding to the language of input sentence.",
+    )
+    parser.add_argument(
+        "--input_file",
+        default="",
+        help="File containing input sentences to be paraphrased",
+    )
+    parser.add_argument(
+        "--output_format", default="csv", help="Output format of augmented dataset"
+    )
 
     parser.add_argument("--prism_a", type=float, default=0.0)
     parser.add_argument("--prism_b", type=int, default=4)
