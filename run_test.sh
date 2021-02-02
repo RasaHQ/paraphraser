@@ -5,6 +5,7 @@ docker run --rm -it \
         python run_paraphraser.py \
 	--language en --prism_a 0.05 \
 	--input_file test.csv \
-	--output_format csv
+	--output_format yaml \
+	--lite
 	# --interactive
 

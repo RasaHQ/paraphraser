@@ -3,7 +3,7 @@ import csv
 from pathlib import Path
 
 from rasa.shared.nlu.training_data.message import Message
-from rasa.shared.nlu.training_data.training_data.loading import load_data
+from rasa.shared.nlu.training_data.loading import load_data
 from rasa.shared.nlu.training_data.training_data import TrainingData
 import logging
 
@@ -14,7 +14,7 @@ def read_from_csv(file_path: Text) -> List[Text]:
 
     collection = []
     with open(file_path, newline="") as csvfile:
-        reader = csv.reader(csvfile, delimiter=",", quotechar="|")
+        reader = csv.reader(csvfile, quotechar='"')
         for line in reader:
             collection.append(line)
     return collection

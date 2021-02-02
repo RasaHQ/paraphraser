@@ -38,7 +38,7 @@ def run_bulk(model, args):
         paraphrases = model.generate_paraphrase(
             input_sentence, args.language, args.prism_a, args.prism_b
         )
-        message.set("metadata", {"paraphrases": paraphrases})
+        message.set("metadata", {"example": {"paraphrases": paraphrases}})
 
     write_collection(collection, DATA_PATH, args.output_format)
 
