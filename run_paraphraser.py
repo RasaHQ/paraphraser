@@ -57,13 +57,23 @@ def run(args):
 
 def validate_args(args):
 
-    if not args.interactive and not args.input_file:
-        raise ValueError(
-            "You chose to run the paraphraser in bulk mode but did not specify a "
-            "file to pick up the input sentences from. Either run in interactive "
-            "mode(--interactive) or pass the path to a file to be paraphrased with "
-            "--input_file option"
-        )
+    if not args.interactive:
+
+        if not args.input_file:
+            raise ValueError(
+                "You chose to run the paraphraser in bulk mode but did not specify a "
+                "file to pick up the input sentences from. Either run in interactive "
+                "mode(--interactive) or pass the path to a file to be paraphrased with "
+                "--input_file option"
+            )
+        if args.output_format not in ["yaml", "csv", "yml"]:
+            raise ValueError(
+                f"You chose to run the paraphraser in bulk mode but the "
+                f"specified output format `{args.output_format}`` is not supported. Please choose from - "
+                f"1. yaml"
+                f"2. yml"
+                f"3. csv"
+            )
 
 
 if __name__ == "__main__":
@@ -95,7 +105,7 @@ if __name__ == "__main__":
         help="File containing input sentences to be paraphrased",
     )
     parser.add_argument(
-        "--output_format", default="csv", help="Output format of augmented dataset"
+        "--output_format", default="yaml", help="Output format of augmented dataset"
     )
 
     parser.add_argument("--prism_a", type=float, default=0.0)

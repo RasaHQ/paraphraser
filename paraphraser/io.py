@@ -3,7 +3,11 @@ import csv
 from pathlib import Path
 
 from rasa.shared.nlu.training_data.message import Message
-from collections import OrderedDict
+from rasa.shared.nlu.training_data.training_data.loading import load_data
+from rasa.shared.nlu.training_data.training_data import TrainingData
+import logging
+
+logger = logging.getLogger()
 
 
 def read_from_csv(file_path: Text) -> List[Text]:
@@ -32,32 +36,31 @@ def read_collection_from_csv(file_path: Text) -> List[Message]:
     return all_sentences
 
 
+def read_rasa_collection(file_path: Text) -> List[Message]:
+
+    data = load_data(file_path)
+    return data.nlu_examples
+
 def read_collection(data_directory: Text, file_path: Text) -> Message:
 
     input_file_path = Path(data_directory) / file_path
     if str(input_file_path).endswith("csv"):
+        logger.debug("Loading as a csv file")
         return read_collection_from_csv(input_file_path)
     else:
-        pass
+        logger.debug("Loading as a Rasa supported NLU data file")
+        try:
+            return read_rasa_collection(input_file_path)
+        except Exception as e:
+            raise RuntimeError("Input file not in the supported format. Please refer to the README to check the supported formats.")
 
 
-# def serialize_collection_as_yaml(collection: List[Message]) -> Text:
-#
-#
-#     training_examples = OrderedDict()
-#
-#     # Sort by intent while keeping basic intent order
-#     for example in [e.as_dict() for e in collection]:
-#         if not example.get("intent"):
-#             continue
-#         intent = example["intent"]
-#         training_examples.setdefault(intent, [])
-#         training_examples[intent].append(example)
-#
-#     return RasaYamlWriter.
+def dump_to_yaml(collection: List[Message], file_path: Text) -> None:
 
+    data = TrainingData(collection)
+    data.persist_nlu(file_path)
 
-def dump_to_csv(csv_lines: List[List[Text]], file_path: Text):
+def dump_to_csv(csv_lines: List[List[Text]], file_path: Text) -> None:
 
     with open(file_path, "w", newline="") as csvfile:
         csvwriter = csv.writer(
@@ -86,10 +89,8 @@ def write_collection(collection: List[Message], output_directory: Text, format: 
 
     output_file_path = Path(output_directory) / f"augmented_data.{format}"
 
-    if str(output_file_path).endswith("csv"):
+    if format == "csv":
         csv_content = serialize_collection_as_csv(collection)
         dump_to_csv(csv_content, output_file_path)
-    else:
-        raise RuntimeError(
-            "Output file path does not end with '.csv' or '.yaml'. Please provide a valid file path"
-        )
+    elif format == "yaml" or format == "yml":
+        dump_to_yaml(collection, output_file_path)
