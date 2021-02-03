@@ -2,8 +2,8 @@
 
 <img src="imgs/square-logo.svg" width=200 height=200 align="right">
 
-Paraphraser is a tool that you can use to generate paraphrases of sentences. The generated paraphrases can be expected to be semantically similar  
-to the original sentence but differ lexically and structurally.  
+Paraphraser is a tool that you can use to generate paraphrases of sentences. The generated paraphrases can be expected to be semantically similar to the original sentence but differ lexically and structurally.
+
 For example -
 
 Input sentence: `Go through the green door, but don't walk across the red tiles.`
@@ -30,8 +30,7 @@ Feedback is welcome!
 
 You will need to install docker engine to use the tool. The docker setup has been tested with docker version `20.10.1`. You can check the installed version with `docker --version`.
 
-We host the docker images on dockerhub as well, but if you are interested in playing with the model extensively we recommend  
-you to build the docker image from scratch -
+We host the docker images on dockerhub as well, but if you are interested in playing with the model extensively we recommend you to build the docker image from scratch -
 
 ### CPU
 
@@ -51,7 +50,7 @@ There are two modes in which you can run the tool -
 
 #### Interactive mode
 
-As the name suggests, this mode lets you generate paraphrases in an online setting. To start the tool in this mode -
+As the name suggests, this mode lets you generate paraphrases in an online setting on the CLI. To start the tool in this mode -
 
 ```bash
 docker run --rm -it \
