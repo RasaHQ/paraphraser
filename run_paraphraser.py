@@ -108,7 +108,7 @@ if __name__ == "__main__":
         "--output_format", default="yaml", help="Output format of augmented dataset"
     )
 
-    parser.add_argument("--prism_a", type=float, default=0.0)
+    parser.add_argument("--prism_a", type=float, default=0.05)
     parser.add_argument("--prism_b", type=int, default=4)
     parser.add_argument("--diverse_beam_groups", type=int, default=10)
     parser.add_argument("--beam", type=int, default=10)
