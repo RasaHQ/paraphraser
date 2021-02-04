@@ -46,9 +46,9 @@ def run_bulk(model, args):
     similarity_scores = sim_scorer.compute_similarities(collection)
     for message, sim_scores in zip(collection, similarity_scores):
         score_dict = {"scores": sim_scores}
-        exisitng_example_metadata = message.get("metadata")["example"]
-        exisitng_example_metadata.update(score_dict)
-        message.set("metadata", {"example": exisitng_example_metadata})
+        existing_example_metadata = message.get("metadata")["example"]
+        existing_example_metadata.update(score_dict)
+        message.set("metadata", {"example": existing_example_metadata})
 
     write_collection(collection, DATA_PATH, args.output_format)
 

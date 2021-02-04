@@ -14,8 +14,8 @@ class USEScorer:
         return 1 - cosine(feature_vec_a, feature_vec_b)
 
     def compute_similarity_for_pair(self, a: Message, b: Message):
-        features_a = a.get("sentence_features")
-        features_b = b.get("sentence_features")
+        features_a = a.get("sentence_features").vector
+        features_b = b.get("sentence_features").vector
 
         return self.compute_similarity_score(features_a, features_b)
 
@@ -28,7 +28,7 @@ class USEScorer:
         # Set features for text of example itself first.
         self.compute_features(example)
 
-        paraphrases = example.get("metadata").get("paraphrases")
+        paraphrases = example.get("metadata").get("example").get("paraphrases")
 
         similarity_scores = []
 
