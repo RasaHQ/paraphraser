@@ -6,6 +6,7 @@ import logging
 from src.nmt_paraphraser.nmt_paraphraser import NMTParaphraser
 from src.io import read_collection, write_collection
 from src.scorer.labse_scorer import LaBSEScorer
+from src.scorer.use_scorer import USEScorer
 
 logger = logging.getLogger()
 DATA_PATH = "/etc/data"
@@ -33,7 +34,7 @@ def run_interactive(model, args):
 
 def run_bulk(model, args):
 
-    sim_scorer = LaBSEScorer()
+    sim_scorer = USEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
     for message in collection:
         input_sentence = message.get("text")
