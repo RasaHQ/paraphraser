@@ -1,10 +1,14 @@
 import torch
 from fairseq.models import FairseqEncoder, FairseqDecoder, FairseqEncoderDecoderModel
 from fairseq import utils
-from paraphraser.modelling.utils import (
+from src.nmt_paraphraser.utils import (
     make_vocab_start_map,
     make_word_penalties_tokens,
 )
+
+"""
+## Code adapted from https://github.com/thompsonb/prism/blob/master/paraphrase_generation/generate_paraphrases.py
+"""
 
 
 class NgramDownweightEncoder(FairseqEncoder):

@@ -41,6 +41,7 @@ def read_rasa_collection(file_path: Text) -> List[Message]:
     data = load_data(file_path)
     return data.nlu_examples
 
+
 def read_collection(data_directory: Text, file_path: Text) -> Message:
 
     input_file_path = Path(data_directory) / file_path
@@ -52,13 +53,16 @@ def read_collection(data_directory: Text, file_path: Text) -> Message:
         try:
             return read_rasa_collection(input_file_path)
         except Exception as e:
-            raise RuntimeError("Input file not in the supported format. Please refer to the README to check the supported formats.")
+            raise RuntimeError(
+                "Input file not in the supported format. Please refer to the README to check the supported formats."
+            )
 
 
 def dump_to_yaml(collection: List[Message], file_path: Text) -> None:
 
     data = TrainingData(collection)
     data.persist_nlu(file_path)
+
 
 def dump_to_csv(csv_lines: List[List[Text]], file_path: Text) -> None:
 

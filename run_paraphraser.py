@@ -3,8 +3,9 @@ import time
 import tqdm
 import logging
 
-from paraphraser.modelling.nmt_paraphraser import NMTParaphraser
-from paraphraser.io import read_collection, write_collection
+from src.nmt_paraphraser.nmt_paraphraser import NMTParaphraser
+from src.io import read_collection, write_collection
+from src.scorer.labse_scorer import LaBSEScorer
 
 logger = logging.getLogger()
 DATA_PATH = "/etc/data"
@@ -32,6 +33,7 @@ def run_interactive(model, args):
 
 def run_bulk(model, args):
 
+    sim_scorer = LaBSEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
     for message in collection:
         input_sentence = message.get("text")
@@ -39,6 +41,13 @@ def run_bulk(model, args):
             input_sentence, args.language, args.prism_a, args.prism_b
         )
         message.set("metadata", {"example": {"paraphrases": paraphrases}})
+
+    similarity_scores = sim_scorer.compute_similarities(collection)
+    for message, sim_scores in zip(collection, similarity_scores):
+        score_dict = {"scores": sim_scores}
+        exisitng_example_metadata = message.get("metadata")["example"]
+        exisitng_example_metadata.update(score_dict)
+        message.set("metadata", {"example": exisitng_example_metadata})
 
     write_collection(collection, DATA_PATH, args.output_format)
 

@@ -4,7 +4,7 @@
 # In[1]:
 
 
-from paraphraser.modelling.nmt_paraphraser import NMTParaphraser
+from src.nmt_paraphraser.nmt_paraphraser import NMTParaphraser
 import os
 import time
 

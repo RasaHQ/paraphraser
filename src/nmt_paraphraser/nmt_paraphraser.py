@@ -1,5 +1,4 @@
 import os
-import time
 import logging
 
 import torch
@@ -8,10 +7,13 @@ from fairseq import utils
 from fairseq.sequence_generator import EnsembleModel
 import sentencepiece as spm
 
-from paraphraser.utils import run_bash_cmd, Bunch, merge_dicts
-from paraphraser.modelling.utils import forward_decoder, get_final_string
-from paraphraser.modelling.ngram_downweight_model_starting import NgramDownweightModel
+from src.utils import run_bash_cmd, Bunch, merge_dicts
+from src.nmt_paraphraser.utils import forward_decoder, get_final_string
+from src.nmt_paraphraser.ngram_downweight_model_starting import NgramDownweightModel
 
+"""
+## Code adapted from https://github.com/thompsonb/prism/blob/master/paraphrase_generation/generate_paraphrases.py
+"""
 
 logger = logging.getLogger()
 
