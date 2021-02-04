@@ -9,7 +9,7 @@ import sentencepiece as spm
 
 from src.utils import run_bash_cmd, Bunch, merge_dicts
 from src.nmt_paraphraser.utils import forward_decoder, get_final_string
-from src.nmt_paraphraser.ngram_downweight_model_starting import NgramDownweightModel
+from src.nmt_paraphraser.ngram_downweight_model import NgramDownweightModel
 
 """
 ## Code adapted from https://github.com/thompsonb/prism/blob/master/paraphrase_generation/generate_paraphrases.py

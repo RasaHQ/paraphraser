@@ -11,7 +11,7 @@ class USEScorer:
 
     @staticmethod
     def compute_similarity_score(feature_vec_a: np.ndarray, feature_vec_b: np.ndarray):
-        return 1 - cosine(feature_vec_a, feature_vec_b)
+        return float(1 - cosine(feature_vec_a, feature_vec_b))
 
     def compute_similarity_for_pair(self, a: Message, b: Message):
         features_a = a.get("sentence_features").vector
