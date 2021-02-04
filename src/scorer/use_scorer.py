@@ -51,3 +51,10 @@ class USEScorer:
             scores_for_collection.append(similarity_scores)
 
         return scores_for_collection
+
+
+if __name__ == "__main__":
+    a = Message.build(text="hellO, how are you doing?", intent="hello")
+    a.set("metadata", {"example": {"paraphrases": ["how are you doing too?", "good to meet you"]}})
+    scorer = USEScorer()
+    scorer.compute_similarity_with_paraphrases(a)
