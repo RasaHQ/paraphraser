@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to DockerHub Registry 🔢
+      run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin || true
+
+    - name: Build the Docker image for CPU and push
+      env:
+        IMAGE_NAME: dakshvar22/paraphraser_cpu:$(date +%s)
+      run: docker build . --file Dockerfile.cpu --tag {{ IMAGE_NAME }} && docker push {{ IMAGE_NAME }}
