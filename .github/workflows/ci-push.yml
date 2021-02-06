@@ -23,8 +23,8 @@ jobs:
         docker push $IMAGE_NAME
 
     - name: Build the Docker image for GPU and push
-        run: |
-          IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_gpu:latest
-          docker build . --file Dockerfile.gpu --tag $IMAGE_NAME
-          docker push $IMAGE_NAME
+      run: |
+        IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_gpu:latest
+        docker build . --file Dockerfile.gpu --tag $IMAGE_NAME
+        docker push $IMAGE_NAME
 
