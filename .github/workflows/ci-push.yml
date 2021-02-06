@@ -16,7 +16,12 @@ jobs:
     - name: Login to DockerHub Registry 🔢
       run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin || true
 
-    - name: Build the Docker image for CPU
+    - name: Build the Docker image for CPU and push
       env:
-        IMAGE_NAME: dakshvar22/paraphraser_cpu:$(date +%s)
-      run: docker build . --file Dockerfile.cpu --tag {{ IMAGE_NAME }}
+        IMAGE_NAME: paraphraser_cpu:latest
+      run: |
+        docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
+        docker tag $IMAGE_NAME ${{ env.DOCKERHUB_USERNAME }}/$IMAGE_NAME
+        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin || true
+        docker push $IMAGE_NAME
+
