@@ -19,4 +19,6 @@ jobs:
     - name: Build the Docker image for CPU and push
       env:
         IMAGE_NAME: dakshvar22/paraphraser_cpu:$(date +%s)
-      run: docker build . --file Dockerfile.cpu --tag {{ IMAGE_NAME }} && docker push {{ IMAGE_NAME }}
+      run: |
+        docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
+        docker push $IMAGE_NAME
