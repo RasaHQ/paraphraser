@@ -14,7 +14,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Login to DockerHub Registry 🔢
-      run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin
+      run: echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin
 
     - name: Build the Docker image for CPU and push
       env:
@@ -22,6 +22,5 @@ jobs:
       run: |
         docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
         docker tag $IMAGE_NAME ${{ env.DOCKERHUB_USERNAME }}/$IMAGE_NAME
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin || true
         docker push $IMAGE_NAME
 
