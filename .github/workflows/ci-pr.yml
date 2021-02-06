@@ -20,6 +20,6 @@ jobs:
       env:
         IMAGE_NAME: paraphraser_cpu:latest
       run: |
+        IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_cpu:latest
         docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
-        docker tag $IMAGE_NAME ${{ env.DOCKERHUB_USERNAME }}/$IMAGE_NAME
         docker push $IMAGE_NAME
