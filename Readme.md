@@ -37,12 +37,21 @@ We host the docker images on dockerhub as well, but if you are interested in pla
 Build the image with -
 
 ```bash
-./build_image.sh
+docker build -f Dockerfile.cpu -t paraphraser_cpu:latest
 ```
 
 ### GPU
 
-TODO: Add separate script and Dockerfile for this
+You will need to install `nvidia-docker` as well to run the tool on GPU enabled devices. Refer to guides like [this](https://gist.github.com/nathzi1505/d2aab27ff93a3a9d82dada1336c45041) to do so.
+
+Build the image with -
+
+```bash
+docker build -f Dockerfile.gpu -t paraphraser_gpu:latest
+```
+
+Next, when running the tool(commands in usage section below) use the appropriate image name depending on CPU or GPU mode and additionally append `--gpus all` if running on GPU.
+
 
 ### Usage
 
@@ -55,10 +64,12 @@ As the name suggests, this mode lets you generate paraphrases in an online setti
 ```bash
 docker run --rm -it \
     -v $PWD/run_paraphraser.py:/home/run_paraphraser.py \
-    rasa/paraphraser:1.0.0 \
+    dakshvar22/paraphraser_cpu:latest \
     python run_paraphraser.py \
     --interactive
 ```
+
+**Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.
 
 #### Bulk Generation mode
 
@@ -69,7 +80,7 @@ This mode lets you run the tool on collection of sentences in bulk. There are tw
 
 You can generate the output in two formats -
 
-1. Rasa's NLU Training data format - The paraphrases for each example will be added as metadata of that example. For example, if the original data looked like -
+1. Rasa's NLU Training data format(recommended) - The paraphrases for each example will be added as metadata of that example. For example, if the original data looked like -
 ```
 nlu:
 - intent: ask_query
@@ -87,23 +98,30 @@ nlu:
        paraphrases: |
        - How to apply for passport
        - Apply for a new passport.
+       scores: |
+       - 0.82
+       - 0.93
 ```
+
+The `scores` section of the yaml shows the semantic similarity of each paraphrase with the original sentence. This is computed with the [multi-lingual USE model](https://tfhub.dev/google/universal-sentence-encoder-multilingual/3)
 
 2. CSV Format - Each paraphrase will be added in a separate line as = `<original-sentence>, <optional-label>, <paraphrase>`.
 
-To generate paraphrases in this mode, run -
+To generate paraphrases in this bulk mode, run -
 
 ```bash
 docker run --rm -it \
     -v $PWD/run_paraphraser.py:/home/run_paraphraser.py \
     -v $PWD/data:/etc/data \
-        rasa/paraphraser:1.0.0 \
+        dakshvar22/paraphraser_cpu:latest \
         python run_paraphraser.py \
         --input_file test.yaml \
         --output_format yaml
 ```
 
-Note that path to input file should be relative to the directory that you are mounting to `/etc/data` which is `$PWD/data` here.
+**Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.
+
+Also note that the path to input file should be relative to the directory that you are mounting to `/etc/data` which is `$PWD/data` here.
 
 **We suggest you to try out the tool in interactive mode first before trying out the bulk generation mode in order to understand which parameters of the model suit your data the best.**
 
