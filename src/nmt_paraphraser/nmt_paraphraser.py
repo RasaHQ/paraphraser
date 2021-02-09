@@ -20,9 +20,9 @@ logger = logging.getLogger()
 
 model_dir = "m39v1/"
 default_args = {
-    "no_progress_bar": True,
+    "no_progress_bar": False,
     "log_interval": 1000,
-    "log_format": None,
+    "log_format": "tqdm",
     "tensorboard_logdir": "",
     "seed": 1,
     "fp16_init_scale": 128,

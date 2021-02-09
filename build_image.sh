@@ -1,1 +1,1 @@
-docker build -t rasa/paraphraser:1.0.0 .
+docker build -f Dockerfile.cpu -t dakshvar22/paraphraser_cpu .
