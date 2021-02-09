@@ -15,6 +15,8 @@ from src.nmt_paraphraser.ngram_downweight_model import NgramDownweightModel
 """
 ## Code adapted from https://github.com/thompsonb/prism/blob/master/paraphrase_generation/generate_paraphrases.py
 """
+fairseq_logger = logging.getLogger("fairseq")
+fairseq_logger.setLevel(30)
 
 logger = logging.getLogger()
 
@@ -275,12 +277,23 @@ class NMTParaphraser:
 
         return cleaned_paraphrases
 
-    def generate_paraphrase(self, sentences, lang, prism_a=0.01, prism_b=4):
-
+    def generate_paraphrases(
+        self, sentences, lang, prism_a=0.01, prism_b=4, batch_size=8
+    ):
         self.reset_prism_value(prism_a, prism_b)
 
         if isinstance(sentences, str):
             sentences = [sentences]
+
+        all_paraphrases = []
+        index = 0
+        while index < len(sentences):
+            batch = sentences[index : index + batch_size]
+            all_paraphrases.append(self.generate_paraphrases_for_batch(batch, lang))
+            index += batch_size
+        return all_paraphrases
+
+    def generate_paraphrases_for_batch(self, sentences, lang):
 
         self.tokenize(sentences, lang)
         self.preprocess_nmt()

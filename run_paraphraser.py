@@ -21,7 +21,7 @@ def run_interactive(model, args):
     while True:
         input_sentence = input("Enter a sentence to be paraphrased: ")
         start = time.time()
-        paraphrases = model.generate_paraphrase(
+        paraphrases = model.generate_paraphrases(
             input_sentence, args.language, args.prism_a, args.prism_b
         )
         end = time.time()
@@ -37,7 +37,7 @@ def run_bulk(model, args):
     sim_scorer = USEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
     input_sentences = [message.get("text") for message in collection]
-    all_paraphrases = model.generate_paraphrase(
+    all_paraphrases = model.generate_paraphrases(
         input_sentences, args.language, args.prism_a, args.prism_b
     )
 
