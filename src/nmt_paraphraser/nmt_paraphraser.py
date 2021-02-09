@@ -38,7 +38,7 @@ default_args = {
     "lr_scheduler": "fixed",
     "task": "translation",
     "num_workers": 1,
-    "skip_invalid_size_inputs_valid_test": False,
+    "skip_invalid_size_inputs_valid_test": True,
     "max_tokens": None,
     "max_sentences": 8,
     "required_batch_size_multiple": 8,
