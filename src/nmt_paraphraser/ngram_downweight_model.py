@@ -65,8 +65,7 @@ class NgramDownweightEncoder(FairseqEncoder):
             `encoder_out` rearranged according to `new_order`
         """
         # these maps arent going to be modified, so multiple references is fine
-        # return [encoder_out[ii] for ii in new_order.cpu().numpy()]
-        return [encoder_out[ii] for ii in new_order.numpy()]
+        return [encoder_out[ii] for ii in new_order.cpu().numpy()]
 
 
 class NgramDownweightDecoder(FairseqDecoder):
