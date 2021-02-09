@@ -42,10 +42,13 @@ def run_bulk(model, args):
     )
 
     for message, paraphrases in zip(collection, all_paraphrases):
-        message.set("metadata", {"example": {"paraphrases": paraphrases}})
+        if paraphrases:
+            message.set("metadata", {"example": {"paraphrases": paraphrases}})
 
     similarity_scores = sim_scorer.compute_similarities(collection)
     for message, sim_scores in zip(collection, similarity_scores):
+        if not sim_scores:
+            continue
         score_dict = {"scores": sim_scores}
         existing_example_metadata = message.get("metadata")["example"]
         existing_example_metadata.update(score_dict)

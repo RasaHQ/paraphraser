@@ -1,1 +1,1 @@
-docker build -f Dockerfile.cpu -t dakshvar22/paraphraser_cpu .
+docker build -f Dockerfile.gpu -t dakshvar22/paraphraser_gpu .

@@ -6,7 +6,7 @@ from fairseq import checkpoint_utils, progress_bar, tasks
 from fairseq import utils
 from fairseq.sequence_generator import EnsembleModel
 import sentencepiece as spm
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from src.utils import run_bash_cmd, Bunch, merge_dicts
 from src.nmt_paraphraser.utils import forward_decoder, get_final_string
@@ -275,6 +275,13 @@ class NMTParaphraser:
 
         return cleaned_paraphrases
 
+    def _fill_skipped_paraphrases(self, id_paraphrases, input_num_sentences):
+
+        for index in range(input_num_sentences):
+            if index not in id_paraphrases:
+                id_paraphrases[index] = []
+        return id_paraphrases
+
     def generate_paraphrase(self, sentences, lang, prism_a=0.01, prism_b=4):
 
         self.reset_prism_value(prism_a, prism_b)
@@ -286,16 +293,18 @@ class NMTParaphraser:
         self.preprocess_nmt()
         paraphrases = self.pass_decoder()
         paraphrases = sorted(paraphrases, key=lambda x: x[0])
-
         # Convert to a list of list where each internal list is a collection of paraphrases for one sentence.
 
         # Collect all paraphrases with the same sample id
-        sample_id_parpahrases = defaultdict(list)
+        sample_id_paraphrases = defaultdict(list)
 
         for sample_id, paraphrase in paraphrases:
-            sample_id_parpahrases[sample_id].append(paraphrase)
+            sample_id_paraphrases[sample_id].append(paraphrase)
 
-        all_paraphrases = list(sample_id_parpahrases.values())
+        sample_id_paraphrases = self._fill_skipped_paraphrases(sample_id_paraphrases, len(sentences))
+        sample_id_paraphrases = OrderedDict(sorted(sample_id_paraphrases.items()))
+
+        all_paraphrases = list(sample_id_paraphrases.values())
         all_paraphrases = self._post_process_paraphrases(all_paraphrases, lang)
 
         return all_paraphrases
