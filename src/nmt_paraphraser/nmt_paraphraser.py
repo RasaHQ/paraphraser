@@ -263,7 +263,9 @@ class NMTParaphraser:
 
         return all_preds
 
-    def _post_process_paraphrases(self, all_paraphrases, lang_id, ):
+    def _post_process_paraphrases(
+        self, all_paraphrases, lang_id,
+    ):
 
         cleaned_paraphrases = []
         for paraphrases in all_paraphrases:

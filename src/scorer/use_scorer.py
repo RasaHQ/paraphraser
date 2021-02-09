@@ -7,7 +7,9 @@ from scipy.spatial.distance import cosine
 
 class USEScorer:
     def __init__(self):
-        self.model = TFHubLanguage("https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+        self.model = TFHubLanguage(
+            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3"
+        )
 
     @staticmethod
     def compute_similarity_score(feature_vec_a: np.ndarray, feature_vec_b: np.ndarray):
@@ -55,6 +57,9 @@ class USEScorer:
 
 if __name__ == "__main__":
     a = Message.build(text="hellO, how are you doing?", intent="hello")
-    a.set("metadata", {"example": {"paraphrases": ["how are you doing too?", "good to meet you"]}})
+    a.set(
+        "metadata",
+        {"example": {"paraphrases": ["how are you doing too?", "good to meet you"]}},
+    )
     scorer = USEScorer()
     scorer.compute_similarity_with_paraphrases(a)

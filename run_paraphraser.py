@@ -26,7 +26,7 @@ def run_interactive(model, args):
         )
         end = time.time()
 
-        for i, p in enumerate(paraphrases):
+        for i, p in enumerate(paraphrases[0]):
             print(f"{i + 1}. {p}")
 
         print(f"Generation completed in {end-start}")
@@ -37,7 +37,9 @@ def run_bulk(model, args):
     sim_scorer = USEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
     input_sentences = [message.get("text") for message in collection]
-    all_paraphrases = model.generate_paraphrase(input_sentences, args.language, args.prism_a, args.prism_b)
+    all_paraphrases = model.generate_paraphrase(
+        input_sentences, args.language, args.prism_a, args.prism_b
+    )
 
     for message, paraphrases in zip(collection, all_paraphrases):
         message.set("metadata", {"example": {"paraphrases": paraphrases}})
