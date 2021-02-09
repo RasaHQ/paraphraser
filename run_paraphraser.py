@@ -36,11 +36,10 @@ def run_bulk(model, args):
 
     sim_scorer = USEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
-    for message in collection:
-        input_sentence = message.get("text")
-        paraphrases = model.generate_paraphrase(
-            input_sentence, args.language, args.prism_a, args.prism_b
-        )
+    input_sentences = [message.get("text") for message in collection]
+    all_paraphrases = model.generate_paraphrase(input_sentences, args.language, args.prism_a, args.prism_b)
+
+    for message, paraphrases in zip(collection, all_paraphrases):
         message.set("metadata", {"example": {"paraphrases": paraphrases}})
 
     similarity_scores = sim_scorer.compute_similarities(collection)

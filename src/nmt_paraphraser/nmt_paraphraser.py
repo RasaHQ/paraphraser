@@ -6,6 +6,7 @@ from fairseq import checkpoint_utils, progress_bar, tasks
 from fairseq import utils
 from fairseq.sequence_generator import EnsembleModel
 import sentencepiece as spm
+from collections import defaultdict
 
 from src.utils import run_bash_cmd, Bunch, merge_dicts
 from src.nmt_paraphraser.utils import forward_decoder, get_final_string
@@ -262,19 +263,40 @@ class NMTParaphraser:
 
         return all_preds
 
-    def generate_paraphrase(self, paragraph, lang, prism_a=0.01, prism_b=4):
+    def _post_process_paraphrases(self, all_paraphrases, lang_id, ):
+
+        cleaned_paraphrases = []
+        for paraphrases in all_paraphrases:
+            paraphrases = [p.replace(f"<{lang_id}>", "").strip() for p in paraphrases]
+            paraphrases = [p.replace(f"<unk>", "").strip() for p in paraphrases]
+            cleaned_paraphrases.append(paraphrases)
+
+        return cleaned_paraphrases
+
+    def generate_paraphrase(self, sentences, lang, prism_a=0.01, prism_b=4):
 
         self.reset_prism_value(prism_a, prism_b)
 
-        self.tokenize([paragraph], lang)
+        if isinstance(sentences, str):
+            sentences = [sentences]
+
+        self.tokenize(sentences, lang)
         self.preprocess_nmt()
         paraphrases = self.pass_decoder()
         paraphrases = sorted(paraphrases, key=lambda x: x[0])
-        # remove the id here
-        paraphrases = [p[1].replace(f"<{lang}>", "").strip() for p in paraphrases]
-        paraphrases = [p.replace(f"<unk>", "").strip() for p in paraphrases]
 
-        return paraphrases
+        # Convert to a list of list where each internal list is a collection of paraphrases for one sentence.
+
+        # Collect all paraphrases with the same sample id
+        sample_id_parpahrases = defaultdict(list)
+
+        for sample_id, paraphrase in paraphrases:
+            sample_id_parpahrases[sample_id].append(paraphrase)
+
+        all_paraphrases = list(sample_id_parpahrases.values())
+        all_paraphrases = self._post_process_paraphrases(all_paraphrases, lang)
+
+        return all_paraphrases
 
     def reset_prism_value(self, prism_a, prism_b):
 
