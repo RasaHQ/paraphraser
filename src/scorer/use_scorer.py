@@ -27,10 +27,15 @@ class USEScorer:
 
     def compute_similarity_with_paraphrases(self, example: Message):
 
+        paraphrases = (
+            example.get("metadata", {}).get("example", {}).get("paraphrases", [])
+        )
+
+        if not paraphrases:
+            return []
+
         # Set features for text of example itself first.
         self.compute_features(example)
-
-        paraphrases = example.get("metadata").get("example").get("paraphrases")
 
         similarity_scores = []
 

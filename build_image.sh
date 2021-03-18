@@ -1,1 +1,1 @@
-docker build -t rasa/paraphraser:1.0.0 .
+docker build -f Dockerfile.gpu -t dakshvar22/paraphraser_gpu .
