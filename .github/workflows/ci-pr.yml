@@ -20,6 +20,7 @@ jobs:
 #      run: |
 #        IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_cpu:latest
 #        docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
+#
 
     - name: Build the Docker image for GPU, make sure it builds successfully
       run: |
