@@ -16,19 +16,21 @@ jobs:
     - name: Login to DockerHub Registry 🔢
       run: echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin
 
-#    - name: Build the Docker image, make sure it builds successfully
-#      run: |
-#        IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_cpu:latest
-#        docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
-#
-
-    - name: Build the Docker image for GPU, make sure it builds successfully
+    - name: Clean up disk space
       run: |
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
         sudo rm -rf "$AGENT_TOOLSDIRECTORY"
         sudo du -sh
+
+    - name: Build the Docker image for CPU, make sure it builds successfully
+      run: |
+        IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_cpu:latest
+        docker build . --file Dockerfile.cpu --tag $IMAGE_NAME
+
+    - name: Build the Docker image for GPU, make sure it builds successfully
+      run: |
         IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_gpu:latest
         docker build . --file Dockerfile.gpu --tag $IMAGE_NAME
         docker push $IMAGE_NAME
