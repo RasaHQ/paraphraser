@@ -16,6 +16,14 @@ jobs:
     - name: Login to DockerHub Registry 🔢
       run: echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin
 
+    - name: Clean up disk space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        sudo du -sh
+
     - name: Build the Docker image for CPU and push
       run: |
         IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_cpu:latest
