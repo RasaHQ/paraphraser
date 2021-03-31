@@ -9,6 +9,11 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN wget --no-check-certificate -O miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.3-Linux-x86_64.sh \
+    && mkdir /root/.conda \
+    && bash miniconda.sh -b \
+    && rm -f miniconda.sh
+
 ENV PATH="/root/miniconda3/bin:${PATH}"
 
 WORKDIR /home
