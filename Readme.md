@@ -4,7 +4,7 @@
 
 Paraphraser is a tool that you can use to generate paraphrases of sentences. The generated paraphrases can be expected to be semantically similar to the original sentence but differ lexically and structurally.
 
-For example -
+For example:
 
 Input sentence: `Go through the green door, but don't walk across the red tiles.`
 
