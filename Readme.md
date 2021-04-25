@@ -66,7 +66,8 @@ docker run --rm -it \
     -v $PWD/run_paraphraser.py:/home/run_paraphraser.py \
     dakshvar22/paraphraser_cpu:latest \
     python run_paraphraser.py \
-    --interactive
+    --interactive \
+    --language en
 ```
 
 **Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.
@@ -116,7 +117,8 @@ docker run --rm -it \
         dakshvar22/paraphraser_cpu:latest \
         python run_paraphraser.py \
         --input_file test.yaml \
-        --output_format yaml
+        --output_format yaml \
+        --language en
 ```
 
 **Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.

@@ -282,7 +282,7 @@ class NMTParaphraser:
                 id_paraphrases[index] = []
         return id_paraphrases
 
-    def generate_paraphrase(self, sentences, lang, prism_a=0.01, prism_b=4):
+    def generate_paraphrases(self, sentences, lang, prism_a=0.01, prism_b=4):
 
         self.reset_prism_value(prism_a, prism_b)
 
