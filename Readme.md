@@ -2,7 +2,7 @@
 
 <img src="imgs/square-logo.svg" width=200 height=200 align="right">
 
-Paraphraser is a tool that you can use to generate paraphrases of sentences. The generated paraphrases can be expected to be semantically similar to the original sentence but differ lexically and structurally.
+Paraphraser is a tool that you can use to generate paraphrases of sentences in multiple languages. The generated paraphrases can be expected to be semantically similar to the original sentence but differ lexically and structurally.
 
 For example -
 
@@ -19,12 +19,12 @@ Generated paraphrases:
 - Go through the green door, but don't walk over the red tiles.
 ```
 
-It uses a transformer based natural language generation model which has been trained on a large text corpus mined from the web. It supports 30 different languages.(See model details below for more information).
+It uses a transformer based natural language generation model which has been trained on a large text corpus mined from the web. It supports 30 different languages (See model details below for the complete list of languages supported).
 The tool was primarily built as part of building a data augmentation pipeline inside the Rasa Open Source framework but you can use it for generating paraphrases for any of your use case as well.
 
 Feedback is welcome!
 
-**Warning: Please be aware that since the underlying model is trained on a large corpus from the web, it can generate offensive content too. The tool doesn't filter/detect any such content as of now.**
+**Warning: Please be aware that since the underlying model is trained on a large corpus from the web, it can generate offensive content too. The tool doesn't filter/detect any such content as of now. Any attempt to generate offensive content using the tool is highly discouraged.**
 
 ## Docker setup
 
