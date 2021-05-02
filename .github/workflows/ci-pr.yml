@@ -33,4 +33,3 @@ jobs:
       run: |
         IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}'/paraphraser_gpu:latest
         docker build . --file Dockerfile.gpu --tag $IMAGE_NAME
-        docker push $IMAGE_NAME
