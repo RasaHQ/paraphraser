@@ -52,7 +52,6 @@ docker build -f Dockerfile.gpu -t paraphraser_gpu:latest .
 
 Next, when running the tool (commands in usage section below) use the appropriate image name depending on CPU or GPU mode and additionally append `--gpus all` if running on GPU.
 
-
 ### Usage
 
 There are two modes in which you can run the tool -
@@ -63,14 +62,19 @@ As the name suggests, this mode lets you generate paraphrases in an online setti
 
 ```bash
 docker run --rm -it \
-    -v $PWD/run_paraphraser.py:/home/run_paraphraser.py \
     dakshvar22/paraphraser_cpu:latest \
-    python run_paraphraser.py \
     --interactive \
     --language en
 ```
 
-**Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.
+Use `dakshvar22/paraphraser_gpu:latest` as docker image name and add `--gpus all` flag to the `docker run` command if running on GPU, for e.g. -
+
+```bash
+docker run --gpus all --rm -it \
+    dakshvar22/paraphraser_gpu:latest \
+    --interactive \
+    --language en
+```
 
 #### Bulk Generation mode
 
@@ -112,16 +116,23 @@ To generate paraphrases in this bulk mode, run -
 
 ```bash
 docker run --rm -it \
-    -v $PWD/run_paraphraser.py:/home/run_paraphraser.py \
     -v $PWD/data:/etc/data \
-        dakshvar22/paraphraser_cpu:latest \
-        python run_paraphraser.py \
-        --input_file test.yaml \
-        --output_format yaml \
-        --language en
+    dakshvar22/paraphraser_cpu:latest \
+    --input_file test.yaml \
+    --output_format yaml \
+    --language en
 ```
 
-**Note**: Use `dakshvar22/paraphraser_gpu:latest` as docker image name and append `--gpus all` to the command if running on GPU.
+Use `dakshvar22/paraphraser_gpu:latest` as docker image name and add `--gpus all` flag to the `docker run` command if running on GPU, for e.g. -
+
+```bash
+docker run --gpus all --rm -it \
+    -v $PWD/data:/etc/data \
+    dakshvar22/paraphraser_gpu:latest \
+    --input_file test.yaml \
+    --output_format yaml \
+    --language en
+```
 
 Also note that the path to input file should be relative to the directory that you are mounting to `/etc/data` which is `$PWD/data` here.
 
