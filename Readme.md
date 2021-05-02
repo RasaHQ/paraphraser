@@ -37,7 +37,7 @@ We host the docker images on dockerhub as well, but if you are interested in pla
 Build the image with -
 
 ```bash
-docker build -f Dockerfile.cpu -t paraphraser_cpu:latest
+docker build -f Dockerfile.cpu -t paraphraser_cpu:latest .
 ```
 
 ### GPU
@@ -47,10 +47,10 @@ You will need to install `nvidia-docker` as well to run the tool on GPU enabled 
 Build the image with -
 
 ```bash
-docker build -f Dockerfile.gpu -t paraphraser_gpu:latest
+docker build -f Dockerfile.gpu -t paraphraser_gpu:latest .
 ```
 
-Next, when running the tool(commands in usage section below) use the appropriate image name depending on CPU or GPU mode and additionally append `--gpus all` if running on GPU.
+Next, when running the tool (commands in usage section below) use the appropriate image name depending on CPU or GPU mode and additionally append `--gpus all` if running on GPU.
 
 
 ### Usage

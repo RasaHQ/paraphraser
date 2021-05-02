@@ -28,6 +28,6 @@ RUN pip install -r requirements.txt
 
 RUN tar -xvf m39v1.tar && rm -f m39v1.tar
 
-COPY . .
+COPY src/ test_bin/ run_paraphraser.py ./
 
 RUN touch run_paraphraser.py
