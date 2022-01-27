@@ -81,10 +81,13 @@ def serialize_collection_as_csv(collection: List[Message]) -> List[List[Text]]:
     for message in collection:
         text = message.get("text")
         intent = message.get("intent")
-        paraphrases = message.get("metadata").get("paraphrases")
+        paraphrases = message.get("metadata", {}).get("example", {}).get("paraphrases")
+        scores = message.get("metadata", {}).get("example", {}).get("scores")
 
-        for paraphrase in paraphrases:
-            csv_lines.append([text, intent, paraphrase])
+        if not paraphrases or not scores:
+            continue
+        for paraphrase, score in zip(paraphrases, scores):
+            csv_lines.append([text, intent, paraphrase, score])
 
     return csv_lines
 
