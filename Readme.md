@@ -97,9 +97,8 @@ You can generate the output in two formats -
 ```
 nlu:
 - intent: ask_query
-  examples:
-   - How to apply for passport
-
+  examples: |
+    - How to apply for passport?
 ```
 The generated paraphrases would be appended in this manner -
 ```yaml
