@@ -36,6 +36,7 @@ def run_bulk(model, args):
     sim_scorer = USEScorer()
     collection = read_collection(DATA_PATH, args.input_file)
     input_sentences = [message.get("text") for message in collection]
+
     all_paraphrases = model.generate_paraphrases(
         input_sentences, args.language, args.prism_a, args.prism_b
     )

@@ -117,7 +117,8 @@ nlu:
 
 The `scores` section of the yaml shows the semantic similarity of each paraphrase with the original sentence. This is computed with the [multi-lingual USE model](https://tfhub.dev/google/universal-sentence-encoder-multilingual/3)
 
-2. CSV Format - Each paraphrase will be added in a separate line as = `<original-sentence>, <optional-label>, <paraphrase>`.
+2. CSV Format - Each paraphrase will be added in a separate line as = `<original-sentence>, <optional-label>, <paraphrase>, <similarity-score>`.
+
 
 To generate paraphrases in this bulk mode, run -
 
